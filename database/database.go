@@ -6,8 +6,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func connectionDatabase() {
-	dsn := "root:@tcp(127.0.0.1:3306)/pbi-btpns"
+func DatabaseConnection() *gorm.DB {
+	dsn := "root:@tcp(127.0.0.1:3306)/pbi_btpns"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
@@ -15,4 +15,5 @@ func connectionDatabase() {
 	}
 
 	db.AutoMigrate(&app.User{})
+	return db
 }
