@@ -159,5 +159,21 @@ func Update(c *gin.Context) {
 }
 
 func Delete(c *gin.Context) {
-	//
+	userId := c.Param("userId")
+
+	updatedUser := &models.User{}
+	db := database.DatabaseConnection()
+	db.First(&updatedUser, "id = ?", userId)
+	if updatedUser.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message": "User not found!",
+		})
+
+		return
+	}
+
+	db.Delete(updatedUser)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User Deleted Successfully!",
+	})
 }
