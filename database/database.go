@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/MarcoVitoC/pbi-btpns/app"
+	"github.com/MarcoVitoC/pbi-btpns/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -14,6 +14,6 @@ func DatabaseConnection() *gorm.DB {
 		panic(err)
 	}
 
-	db.AutoMigrate(&app.User{})
+	db.AutoMigrate(&models.User{})
 	return db
 }
