@@ -59,9 +59,7 @@ func Register(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
-	user := &models.User{}
 	loginRequest := &models.LoginRequest{}
-
 	if err := c.Bind(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"message": "Request failed!",
@@ -70,6 +68,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	user := &models.User{}
 	db := database.DatabaseConnection()
 	db.First(&user, "email = ?", loginRequest.Email)
 	if user.ID == 0 {
@@ -118,7 +117,45 @@ func Validate(c *gin.Context) {
 }
 
 func Update(c *gin.Context) {
-	//
+	userId := c.Param("userId")
+
+	updateUserRequest := &models.UpdateUser{}
+	if err := c.Bind(&updateUserRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message": "Request failed!",
+		})
+
+		return
+	}
+
+	updatedUser := &models.User{}
+	db := database.DatabaseConnection()
+	db.First(&updatedUser, "id = ?", userId)
+	if updatedUser.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message": "User not found!",
+		})
+
+		return
+	}
+
+	updatedUser.Username = updateUserRequest.Username
+	updatedUser.Email = updateUserRequest.Email
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(updateUserRequest.Password), 10)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H {
+			"message": "Failed to hash password!",
+		})
+
+		return
+	}
+	updatedUser.Password = string(hash)
+	db.Save(updatedUser)
+	
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User Updated Successfully!",
+	})
 }
 
 func Delete(c *gin.Context) {
