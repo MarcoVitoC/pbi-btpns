@@ -177,6 +177,7 @@ func Delete(c *gin.Context) {
 	userId := c.Param("userId")
 
 	user := &models.User{}
+	photo := &models.Photo{}
 	db := database.DatabaseConnection()
 	db.First(&user, "id = ?", userId)
 	if user.ID == 0 {
@@ -186,6 +187,11 @@ func Delete(c *gin.Context) {
 		})
 
 		return
+	}
+
+	db.First(&photo, "user_id = ?", userId)
+	if photo.UserID != 0 {
+		db.Delete(photo)
 	}
 
 	db.Delete(user)
