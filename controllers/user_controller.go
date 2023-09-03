@@ -2,14 +2,12 @@ package controllers
 
 import (
 	"net/http"
-	"os"
-	"time"
 
+	"github.com/MarcoVitoC/pbi-btpns/helpers"
 	"github.com/MarcoVitoC/pbi-btpns/database"
 	"github.com/MarcoVitoC/pbi-btpns/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -35,7 +33,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	hash, err := helpers.HashPassword(user.Password)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"code": 400,
@@ -95,12 +93,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": user.ID,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
-	})
-
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	tokenString, err := helpers.GenerateToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"code": 400,
