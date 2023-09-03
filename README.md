@@ -4,7 +4,6 @@ A RESTful API final task for a project-based internship at BTPN Syariah Bank fro
 ## 📋 Requirements
 ### User Endpoint:
 - Login and register
-- Generate JWT token
 - Update user
 - Delete user
 ### Photos Endpoint:
