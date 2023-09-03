@@ -28,7 +28,7 @@ func UploadPhoto(c *gin.Context) {
 		UserID: user.ID,
 	}
 
-	result := database.DatabaseConnection().Create(&newPhoto)
+	result := database.DB().Create(&newPhoto)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"code": 400,
@@ -47,7 +47,7 @@ func UploadPhoto(c *gin.Context) {
 func GetPhoto(c *gin.Context) {
 	var photos []models.Photo
 
-	result := database.DatabaseConnection().Find(&photos)
+	result := database.DB().Find(&photos)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
 			"code": 400,
@@ -78,7 +78,7 @@ func UpdatePhoto(c *gin.Context) {
 	}
 
 	updatedPhoto := &models.Photo{}
-	db := database.DatabaseConnection()
+	db := database.DB()
 	db.First(&updatedPhoto, "id = ?", photoId)
 	if updatedPhoto.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {
@@ -104,7 +104,7 @@ func DeletePhoto(c *gin.Context) {
 	photoId := c.Param("photoId")
 
 	photo := &models.Photo{}
-	db := database.DatabaseConnection()
+	db := database.DB()
 	db.First(&photo, "id = ?", photoId)
 	if photo.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {

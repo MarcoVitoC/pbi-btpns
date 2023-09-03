@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func DatabaseConnection() *gorm.DB {
+func DB() *gorm.DB {
 	dsn := "root:@tcp(127.0.0.1:3306)/pbi_btpns"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
@@ -14,7 +14,6 @@ func DatabaseConnection() *gorm.DB {
 		panic(err)
 	}
 
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Photo{})
+	db.AutoMigrate(&models.User{}, &models.Photo{})
 	return db
 }

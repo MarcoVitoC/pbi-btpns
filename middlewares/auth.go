@@ -32,7 +32,7 @@ func Auth(c *gin.Context) {
 		}
 
 		user := &models.User{}
-		database.DatabaseConnection().First(&user, claims["sub"])
+		database.DB().First(&user, claims["sub"])
 
 		if user.ID == 0 {
 			c.AbortWithStatus(http.StatusUnauthorized)

@@ -44,7 +44,7 @@ func Register(c *gin.Context) {
 	}
 
 	newUser := models.User{Username: user.Username, Email: user.Email, Password: string(hash)}
-	result := database.DatabaseConnection().Create(&newUser)
+	result := database.DB().Create(&newUser)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
@@ -73,7 +73,7 @@ func Login(c *gin.Context) {
 	}
 
 	user := &models.User{}
-	db := database.DatabaseConnection()
+	db := database.DB()
 	db.First(&user, "email = ?", loginRequest.Email)
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {
@@ -111,15 +111,6 @@ func Login(c *gin.Context) {
 	})
 }
 
-func Validate(c *gin.Context) {
-	loggedInUser, _ := c.Get("user")
-
-	c.JSON(http.StatusOK, gin.H {
-		"code": 200,
-		"message": loggedInUser,
-	})
-}
-
 func Update(c *gin.Context) {
 	userId := c.Param("userId")
 
@@ -134,7 +125,7 @@ func Update(c *gin.Context) {
 	}
 
 	updatedUser := &models.User{}
-	db := database.DatabaseConnection()
+	db := database.DB()
 	db.First(&updatedUser, "id = ?", userId)
 	if updatedUser.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {
@@ -171,7 +162,7 @@ func Delete(c *gin.Context) {
 
 	user := &models.User{}
 	photo := &models.Photo{}
-	db := database.DatabaseConnection()
+	db := database.DB()
 	db.First(&user, "id = ?", userId)
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {

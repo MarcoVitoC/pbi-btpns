@@ -2,9 +2,11 @@ package main
 
 import (
 	"github.com/MarcoVitoC/pbi-btpns/router"
+	"github.com/MarcoVitoC/pbi-btpns/database"
 )
 
 func main() {
-	r := router.SetupRouter()
+	database.DB()
+	r := router.SetRouter()
 	r.Run()
 }
