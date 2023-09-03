@@ -9,6 +9,7 @@ type User struct {
 	Username 	string 	`validate:"required" json:"username"`
 	Email 		string 	`gorm:"unique" validate:"required,email" json:"email"`
 	Password 	string 	`validate:"required,min=6" json:"password"`
+	Photo Photo 			`gorm:"foreignKey:UserID"`
 	CreatedAt 	time.Time
 	UpdatedAt 	time.Time
 }

@@ -15,5 +15,6 @@ func DatabaseConnection() *gorm.DB {
 	}
 
 	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Photo{})
 	return db
 }

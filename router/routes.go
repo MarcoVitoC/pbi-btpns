@@ -17,5 +17,10 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/users/:userId", controllers.Update)
 	r.DELETE("/users/:userId", controllers.Delete)
 
+	r.POST("/photos", middlewares.Auth, controllers.UploadPhoto)
+	r.GET("/photos", controllers.GetPhoto)
+	r.PUT("/photos/:photoId", middlewares.Auth, controllers.UpdatePhoto)
+	r.DELETE("/photos/:photoId", middlewares.Auth, controllers.DeletePhoto)
+
 	return r
 }

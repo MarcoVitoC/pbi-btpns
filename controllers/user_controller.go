@@ -18,6 +18,7 @@ func Register(c *gin.Context) {
 
 	if err := c.Bind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "Request failed!",
 		})
 
@@ -27,6 +28,7 @@ func Register(c *gin.Context) {
 	var validate = validator.New()
 	if validationErr := validate.Struct(user); validationErr != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": validationErr.Error(),
 		})
 
@@ -36,6 +38,7 @@ func Register(c *gin.Context) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "Failed to hash password!",
 		})
 
@@ -47,13 +50,15 @@ func Register(c *gin.Context) {
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": result.Error,
 		})
 
 		return
 	}
 	
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusOK, gin.H {
+		"code": 200,
 		"message": "Registration succeed!",
 	})
 }
@@ -62,6 +67,7 @@ func Login(c *gin.Context) {
 	loginRequest := &models.LoginRequest{}
 	if err := c.Bind(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "Request failed!",
 		})
 
@@ -73,6 +79,7 @@ func Login(c *gin.Context) {
 	db.First(&user, "email = ?", loginRequest.Email)
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "User not found!",
 		})
 
@@ -81,6 +88,7 @@ func Login(c *gin.Context) {
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "Invalid password",
 		})
 
@@ -95,6 +103,7 @@ func Login(c *gin.Context) {
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "Failed to create token!",
 		})
 
@@ -104,6 +113,7 @@ func Login(c *gin.Context) {
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("Authorization", tokenString, 3600 * 24 * 30, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
 		"message": "Login succeed!",
 	})
 }
@@ -111,7 +121,8 @@ func Login(c *gin.Context) {
 func Validate(c *gin.Context) {
 	loggedInUser, _ := c.Get("user")
 
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusOK, gin.H {
+		"code": 200,
 		"message": loggedInUser,
 	})
 }
@@ -122,6 +133,7 @@ func Update(c *gin.Context) {
 	updateUserRequest := &models.UpdateUser{}
 	if err := c.Bind(&updateUserRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "Request failed!",
 		})
 
@@ -133,6 +145,7 @@ func Update(c *gin.Context) {
 	db.First(&updatedUser, "id = ?", userId)
 	if updatedUser.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "User not found!",
 		})
 
@@ -145,6 +158,7 @@ func Update(c *gin.Context) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(updateUserRequest.Password), 10)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "Failed to hash password!",
 		})
 
@@ -153,7 +167,8 @@ func Update(c *gin.Context) {
 	updatedUser.Password = string(hash)
 	db.Save(updatedUser)
 	
-	c.JSON(http.StatusOK, gin.H{
+	c.JSON(http.StatusOK, gin.H {
+		"code": 200,
 		"message": "User Updated Successfully!",
 	})
 }
@@ -161,19 +176,21 @@ func Update(c *gin.Context) {
 func Delete(c *gin.Context) {
 	userId := c.Param("userId")
 
-	updatedUser := &models.User{}
+	user := &models.User{}
 	db := database.DatabaseConnection()
-	db.First(&updatedUser, "id = ?", userId)
-	if updatedUser.ID == 0 {
+	db.First(&user, "id = ?", userId)
+	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H {
+			"code": 400,
 			"message": "User not found!",
 		})
 
 		return
 	}
 
-	db.Delete(updatedUser)
-	c.JSON(http.StatusOK, gin.H{
+	db.Delete(user)
+	c.JSON(http.StatusOK, gin.H {
+		"code": 200,
 		"message": "User Deleted Successfully!",
 	})
 }
